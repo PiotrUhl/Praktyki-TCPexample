@@ -13,9 +13,8 @@ namespace TCPserver {
             try {
                 listener = new TcpListener(ip, port);
                 listener.Start();
-                Console.WriteLine("Listening at " + port);
-                while (true)
-                {
+                Console.WriteLine("Listening at " + listener.LocalEndpoint);
+                while (true) {
                     socket = listener.AcceptSocket(); //accept connection
                     Console.WriteLine("Connection accepted from " + socket.RemoteEndPoint);
 
@@ -32,11 +31,20 @@ namespace TCPserver {
                         newMessage += Convert.ToChar(c);
 					}
                     socket.Send(System.Text.Encoding.ASCII.GetBytes(newMessage)); //send encoded data
-                    Console.WriteLine("Sent message:     \"" + newMessage + '\"');
+                    Console.WriteLine("Sent message:     \"" + newMessage + "\"\n");
 
                     socket.Close(); //close connection
                     socket = null;
                 }
+            }
+            catch (SocketException e) {
+                Console.WriteLine("Error: " + e.Message);
+            }
+            catch (ObjectDisposedException e) {
+                Console.WriteLine("Error: " + e.Message);
+            }
+            catch (InvalidOperationException e) {
+                Console.WriteLine("Error: " + e.Message);
             }
             catch (Exception e) {
                 Console.WriteLine("Error!: " + e.StackTrace);

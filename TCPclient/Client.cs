@@ -10,8 +10,9 @@ namespace TCPclient {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             UInt16 port = 50000;
             TcpClient tcpClient = null;
-            try {
-                while (true)
+            while (true)
+            {
+                try
                 {
                     Console.Write("Enter data or \'exit\': ");
                     String outMessage = Console.ReadLine();
@@ -30,22 +31,35 @@ namespace TCPclient {
                     Console.WriteLine("Sent message:     \"" + outMessage + '\"');
 
                     byte[] inData = new byte[256];
-                    int bytes = stream.Read(inData, 0, 256); //read incomming data from stream
+                    int bytes = stream.Read(inData, 0, 256); //read incoming data from stream
                     String inMessage = System.Text.Encoding.ASCII.GetString(inData, 0, bytes);
-                    Console.WriteLine("Recieved message: \"" + inMessage + '\"');
+                    Console.WriteLine("Recieved message: \"" + inMessage + "\"\n");
 
                     stream.Close();
                     tcpClient.Close();
                     tcpClient = null;
                 }
+                catch (SocketException e) {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+                catch (IOException e) {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+                catch (ObjectDisposedException e) {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+                catch (InvalidOperationException e) {
+                    Console.WriteLine("Error: " + e.Message);
+                }
+                catch (Exception e) {
+                    Console.WriteLine("Error!: " + e.StackTrace);
+                }
+                finally {
+                    if (tcpClient != null && tcpClient.Connected)
+                        tcpClient.Close();
+                }
             }
-            catch (Exception e) {
-                Console.WriteLine("Error!: " + e.StackTrace);
-            }
-            finally {
-                if (tcpClient != null && tcpClient.Connected)
-                    tcpClient.Close();
-            }
+            Console.WriteLine("Aplication ended");
         }
     }
 }
