@@ -4,6 +4,17 @@ using System.Net.Sockets;
 
 namespace TCPserver {
     class Server {
+        private static String encodeString(String str) {
+            String ret = String.Empty;
+            foreach (var k in str) { //encode data with Caesar cipher
+                ushort c = Convert.ToUInt16(k);
+                c += 5;
+                if (c > 126)
+                    c -= 95;
+                ret += Convert.ToChar(c);
+            }
+            return ret;
+        }
         public static void Main() {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             UInt16 port = 50000;
@@ -23,14 +34,7 @@ namespace TCPserver {
                     int bytes = stream.Read(data, 0, 256); //get data
                     String message = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
                     Console.WriteLine("Recieved message: \"" + message + '\"');
-                    String newMessage = String.Empty;
-                    foreach (var k in message) { //encode data with Caesar cipher
-						ushort c = Convert.ToUInt16(k);
-                        c += 5;
-                        if (c > 126)
-                            c -= 95;
-                        newMessage += Convert.ToChar(c);
-					}
+                    String newMessage = encodeString(message);
                     stream.Write(System.Text.Encoding.ASCII.GetBytes(newMessage)); //send encoded data
                     Console.WriteLine("Sent message:     \"" + newMessage + "\"\n");
 
