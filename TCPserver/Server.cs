@@ -25,10 +25,14 @@ namespace TCPserver {
                     Console.WriteLine("Recieved message: \"" + message + '\"');
                     String newMessage = String.Empty;
                     foreach (var k in message) { //encode data with Caesar cipher
-                        newMessage += Convert.ToChar(Convert.ToUInt16(k) + 5);
+						ushort c = Convert.ToUInt16(k);
+                        c += 5;
+                        if (c > 126)
+                            c -= 95;
+                        newMessage += Convert.ToChar(c);
 					}
                     socket.Send(System.Text.Encoding.ASCII.GetBytes(newMessage)); //send encoded data
-                    Console.WriteLine("Sent message: \"" + newMessage + '\"');
+                    Console.WriteLine("Sent message:     \"" + newMessage + '\"');
 
                     socket.Close(); //close connection
                     socket = null;
