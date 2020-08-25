@@ -9,17 +9,19 @@ namespace TCPserver {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
             UInt16 port = 50000;
             TcpListener listener = null;
-            Socket socket = null;
+            TcpClient client = null;
             try {
                 listener = new TcpListener(ip, port);
                 listener.Start();
                 Console.WriteLine("Listening at " + listener.LocalEndpoint);
                 while (true) {
-                    socket = listener.AcceptSocket(); //accept connection
-                    Console.WriteLine("Connection accepted from " + socket.RemoteEndPoint);
+                    client = listener.AcceptTcpClient(); //accept connection
+                    Console.WriteLine("Connection accepted from " + client.Client.RemoteEndPoint);
+
+                    NetworkStream stream = client.GetStream(); //gets stream from connection
 
                     byte[] data = new byte[256];
-                    int bytes = socket.Receive(data); //get data
+                    int bytes = stream.Read(data, 0, 256); //get data
                     String message = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
                     Console.WriteLine("Recieved message: \"" + message + '\"');
                     String newMessage = String.Empty;
@@ -30,11 +32,11 @@ namespace TCPserver {
                             c -= 95;
                         newMessage += Convert.ToChar(c);
 					}
-                    socket.Send(System.Text.Encoding.ASCII.GetBytes(newMessage)); //send encoded data
+                    stream.Write(System.Text.Encoding.ASCII.GetBytes(newMessage)); //send encoded data
                     Console.WriteLine("Sent message:     \"" + newMessage + "\"\n");
 
-                    socket.Close(); //close connection
-                    socket = null;
+                    client.Close(); //close connection
+                    client = null;
                 }
             }
             catch (SocketException e) {
@@ -50,8 +52,8 @@ namespace TCPserver {
                 Console.WriteLine("Error!: " + e.StackTrace);
             }
             finally {
-                if (socket != null)
-                    socket.Close();
+                if (client != null)
+                    client.Close();
                 if (listener != null)
                     listener.Stop();
             }
