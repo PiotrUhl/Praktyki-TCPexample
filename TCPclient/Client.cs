@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Net.Sockets;
 
 namespace TCPclient {
@@ -22,7 +21,6 @@ namespace TCPclient {
                     Console.WriteLine("Connecting...");
                     tcpClient = new TcpClient();
                     tcpClient.Connect(ip, port);
-                    Console.WriteLine("Connected");
 
                     Stream stream = tcpClient.GetStream(); //get stream from connection
 
